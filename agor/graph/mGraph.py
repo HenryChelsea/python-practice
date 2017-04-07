@@ -24,15 +24,23 @@
 """
 import Queue
 
+
 class Graph(object):
-    def __init__(self):
+    def __init__(self, graph_list):
         self._V = 0
         self._E = 0
+        self._exist_v = set()
         self._bag = {}
+        for node in graph_txt:
+            v, w = node
+            self.add_edge(v, w) 
 
     def add_edge(self, v, w):
         self._bag.setdefault(v, []).append(w)
         self._bag.setdefault(w, []).append(v)
+        self._exist_v.add(v)
+        self._exist_v.add(w)
+        self._V = len(self._exist_v)
         self._E += 1
 
     def V(self):
@@ -40,6 +48,9 @@ class Graph(object):
 
     def E(self):
         return self._E
+
+    def exist_v(self):
+        return list(self._exist_v)
 
     def adj(self, v):
         return self._bag.get(v, [])
@@ -85,6 +96,15 @@ class DFS(object):
             cur_node =  _node
         return [p for p in paths]
 
+    def paths(self):
+        _paths = {}
+
+        for w in self._G.exist_v():
+            w_paths = self.path_to(w)
+            _paths[w] = w_paths
+        return _paths
+
+
 class Test(object):
     pass
 
@@ -101,12 +121,11 @@ if __name__ == '__main__':
     ]
 
 
-    graph = Graph()
-    for node in graph_txt:
-        v, w = node
-        graph.add_edge(v, w)
-
+    graph = Graph(graph_txt)
+    print ">>> ", graph.exist_v()
     search = DFS(graph, 0)
     print search._marked
     print search.edgeTo
     print search.path_to(5)
+    print search.paths()
+
